@@ -1,0 +1,17 @@
+{
+  "name": "ropsamtask",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start:frontend": "npm run dev --prefix vehicle-dashboard",
+    "start:backend": "npm run start --prefix vehicle-backend",
+    "start": "concurrently \"npm run start:frontend\" \"npm run start:backend\""
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
