@@ -66,7 +66,7 @@ npm install concurrently --save-dev
 
 3. **Create an `.env` file** in the `frontend` directory and add necessary environment variables such as API base URL. Refer to `.env.example` for the required variables.
 
-4. **For running frontend and backend concurrently**
+4. ## For running frontend and backend concurrently
 ## stay  or navigate back in the root folder
 
     ```bash
@@ -78,7 +78,7 @@ npm install concurrently --save-dev
 5. **For running frontend and backend separately**
 
 
-## Run the frontend app:**
+## Run the frontend app (cd into vehicle-dashboard):
 **Navigate to the vehicle-dashboard directory:**
 
     ```bash
