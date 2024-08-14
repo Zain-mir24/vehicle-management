@@ -87,7 +87,7 @@ npm install concurrently --save-dev
 **Then run this**
 
     ```bash
-    npm start
+    npm run dev
     ```
 
    The frontend application will be running on `http://localhost:5173` by default (you can change this in the `.env` file).
