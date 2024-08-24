@@ -15,7 +15,6 @@ export class CategoryService {
 
   async create(createCategoryDto: CreateCategoryDto): Promise<Category> {
     try{
-      console.log(createCategoryDto)
       const createdCategory = new this.categoryModel(createCategoryDto);
       const saveCategory= await createdCategory.save();
       return saveCategory;
@@ -35,15 +34,45 @@ export class CategoryService {
   }
 
   async findAll(): Promise<Category[]> {
-    return this.categoryModel.find().exec();
+    try{
+    const findCategory = await  this.categoryModel.find().exec();
+
+    return findCategory;
+    }catch(e){
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: e.message || e,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: e.message || e,
+        },
+      );
+    }
+
   }
 
   async findOne(id: string): Promise<Category> {
-    const category = await this.categoryModel.findById(id).exec();
-    if (!category) {
-      throw new NotFoundException(`Category with ID ${id} not found`);
+    try{
+      const category = await this.categoryModel.findById(id).exec();
+      if (!category) {
+        throw new NotFoundException(`Category with ID ${id} not found`);
+      }
+      return category;
+    }catch(e){
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: e.message || e,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: e.message || e,
+        },
+      );
     }
-    return category;
+  
   }
 
   async update(id: string, updateCategoryDto: UpdateCategoryDto): Promise<Category> {
@@ -70,10 +99,20 @@ export class CategoryService {
    
   }
 
-  async remove(id: string): Promise<void> {
-    const result = await this.categoryModel.findByIdAndDelete(id).exec();
-    if (!result) {
-      throw new NotFoundException(`Category with ID ${id} not found`);
+  async remove(id: string): Promise<{message:string,status:number}> {
+    try{
+      const result = await this.categoryModel.findByIdAndDelete(id).exec();
+      if (!result) {
+        throw new NotFoundException(`Category with ID ${id} not found`);
+      }
+      return {
+        message: "Category deleted",
+        status: HttpStatus.OK,
+      }
+
+    }catch(e){
+
     }
+   
   }
 }

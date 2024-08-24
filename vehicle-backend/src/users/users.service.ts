@@ -84,7 +84,5 @@ constructor(@InjectModel(User.name) private userModel: Model<UserDocument>){
 
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} user`;
-  }
+
 }

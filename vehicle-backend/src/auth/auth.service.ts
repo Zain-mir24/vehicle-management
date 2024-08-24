@@ -41,12 +41,7 @@ export class AuthService {
         { expiresIn: '1h' },
       );
 
-      const refreshToken = jwt.sign(
-        { user_email: createAuthDto.email },
-        process.env.SECRET_REFRESH_KEY,
-        { expiresIn: '17h' },
-      );
-
+    
       if (!user) {
         await this.usersService.create(createAuthDto);
 
@@ -60,7 +55,7 @@ export class AuthService {
           from: process.env.MY_EMAIL, // sender address
           subject: 'Testing Nest MailerModule ✔', // Subject line
           text: `This is your token login and verify {accessToken}`, // plaintext body
-          html: `<a href="http://localhost:5173/signup-verify/${accessToken}/${refreshToken}">Click here to verify your account</a>`, // HTML body content
+          html: `<a href="http://localhost:5173/signup-verify/${accessToken}">Click here to verify your account</a>`, // HTML body content
         })
         .then((r) => {
           console.log(r, 'SEND RESPONSE');
@@ -101,15 +96,10 @@ export class AuthService {
         process.env.SECRET_KEY,
         { expiresIn: '20h' },
       );
-      const refreshToken = jwt.sign(
-        { user_email: userLoginData.email },
-        process.env.SECRET_REFRESH_KEY,
-        { expiresIn: '17h' },
-      );
+    
       const userData={
         ...user,
-        accessToken,
-        refreshToken
+        accessToken
       }
       return {
         message: 'Login successful',
@@ -171,23 +161,5 @@ export class AuthService {
       );
     }
   }
-  create(createAuthDto: CreateAuthDto) {
-    return 'This action adds a new auth';
-  }
 
-  findAll() {
-    return `This action returns all auth`;
-  }
-
-  findOne(id: number) {
-    return `This action returns a #${id} auth`;
-  }
-
-  update(id: number, updateAuthDto: UpdateAuthDto) {
-    return `This action updates a #${id} auth`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} auth`;
-  }
 }
