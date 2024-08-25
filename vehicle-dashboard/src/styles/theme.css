@@ -1,0 +1,19 @@
+@layer tailwind-base, primereact, tailwind-utilities;
+@layer tailwind-base {
+  @layer base {
+    .h1-bold {
+      @apply font-semibold text-[28px]  2xl:text-[36px] text-[#18120F];
+    }
+    .h2-bold {
+      @apply font-semibold text-[24px]  2xl:text-[32px] text-[#18120F];
+    }
+    .h3-bold {
+      @apply font-semibold text-[20px]  2xl:text-[28px] text-[#18120F];
+    }
+  }
+}
+
+@layer tailwind-utilities {
+  @tailwind components;
+  @tailwind utilities;
+}
