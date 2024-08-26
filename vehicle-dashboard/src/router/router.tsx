@@ -24,7 +24,7 @@ const AppRouter = () => {
       ),
     },
     {
-      path: "/verification",
+      path: "/verification/:token",
       element: (
         <PublicRoute>
           <Verification />

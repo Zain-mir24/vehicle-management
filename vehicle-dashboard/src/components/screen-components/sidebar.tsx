@@ -36,7 +36,6 @@ const Sidebar = () => {
   };
   useEffect(() => {
     function handleResize() {
-      console.log(window.innerWidth, "window.innerWidth");
       if (window.innerWidth > 1024) {
         dispatch(ToogleSidebar(true));
       } else {

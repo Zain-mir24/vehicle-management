@@ -2,6 +2,7 @@
 import { configureStore, combineReducers, Action } from "@reduxjs/toolkit";
 import { persistStore, persistReducer } from "redux-persist";
 import AuthSlice from "./Slices/AuthSlice";
+import CategorySlice from "./Slices/CategorySlice";
 import SidebarSlice from "./Slices/SidebarSlice";
 import storage from "redux-persist/lib/storage";
 
@@ -12,6 +13,7 @@ const persistConfig = {
 const appReducer = combineReducers({
   auth: AuthSlice,
   sidebar: SidebarSlice,
+  CategorySlice:CategorySlice
 });
 const rootReducer = (state: any, action: Action) => {
   if (action.type === "LOGOUT") {

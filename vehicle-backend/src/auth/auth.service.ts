@@ -55,7 +55,7 @@ export class AuthService {
           from: process.env.MY_EMAIL, // sender address
           subject: 'Testing Nest MailerModule ✔', // Subject line
           text: `This is your token login and verify {accessToken}`, // plaintext body
-          html: `<a href="http://localhost:5173/signup-verify/${accessToken}">Click here to verify your account</a>`, // HTML body content
+          html: `<a href="http://localhost:5173/verification/${accessToken}">Click here to verify your account</a>`, // HTML body content
         })
         .then((r) => {
           console.log(r, 'SEND RESPONSE');
@@ -125,6 +125,7 @@ export class AuthService {
       const verify = jwt.verify(token, process.env.SECRET_KEY);
       const email = verify.user_email;
       let userData = await this.usersService.findByEmail(email);
+      console.log(userData)
       if(!!userData.verified)
          return {
         message:"user already verified",
@@ -136,7 +137,9 @@ export class AuthService {
         const toUpdate = {
           verified:true
         }
-        const update = await this.usersService.update(userData.id, toUpdate);
+      console.log(userData)
+
+        const update = await this.usersService.update(userData._id, toUpdate);
 
         if (!update) {
           throw new Error('Error updating data');

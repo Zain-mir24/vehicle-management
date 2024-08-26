@@ -3,18 +3,47 @@ import { createSlice } from "@reduxjs/toolkit";
 import url from "config/index";
 import type { PayloadAction } from "@reduxjs/toolkit";
 
+
 type LoginData = {
   authData: {};
 };
 type AuthData = {};
-export const Signup = async () => {
+
+export const SignupApi = async (data:{
+  username:string,email:string,password:string
+}) => {
   try {
-    const response = await url.post("");
+    console.log(data);
+    const response = await url.post("/auth/signup",data);
     console.log("response", response);
-  } catch (err) {
+    return response
+  } catch (err:Error) {
     console.log(err);
+    return err.response
   }
 };
+
+export const SignupVerify = async () => {
+  try {
+    const response = await url.get("/auth/signup/confirm");
+    return response
+  } catch (e: Error) {
+    return e.response
+  }
+}
+
+export const SigninApi = async (data: {
+  email: string;
+  password: string;
+}) => {
+  try {
+    const response = await url.post("/auth/login", data);
+    return response
+  } catch (e: Error) {
+    return e.response
+  }
+}
+
 const initialState: LoginData = {
   authData: {},
 };

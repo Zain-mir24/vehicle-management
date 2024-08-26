@@ -5,17 +5,42 @@ import PasswordInput from "components/ui/Inputs/PasswordInput";
 import handImg from "assets/hand.svg";
 import Button from "components/ui/Button";
 import { Link } from "react-router-dom";
-
+import {SignupApi} from "../../Store/Slices/AuthSlice";
+import { useNavigate } from "react-router-dom";
 const Signup = () => {
+  const navigate = useNavigate();
   const [userdata, setuserdata] = useState({
     username: "",
     email: "",
     password: "",
     confirmpassword: "",
   });
+  const [error, setError] = useState("");
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    console.log(userdata, "userdata");
+
+    if (userdata.password !== userdata.confirmpassword) {
+      setError("Passwords do not match");
+      return;
+    };
+
+    const response: any = await SignupApi({
+      username: userdata.username,
+      email: userdata.email,
+      password: userdata.password
+    });
+
+
+    if (response.data?.error) {
+      setError(response.data.error);
+    }
+    setError(""); // Clear any previous error
+
+    if(response.data.message){
+      alert(response.data.message);
+      navigate('/signin')
+    }
+
   };
   return (
     <div className="relative flex flex-col gap-5 items-center justify-center w-full min-h-[100vh]">
@@ -67,13 +92,18 @@ const Signup = () => {
           <PasswordInput
             value={userdata.confirmpassword}
             onChange={(e) =>
-              setuserdata({ ...userdata, password: e.target.value })
+              setuserdata({ ...userdata, confirmpassword: e.target.value })
             }
             id="confirmpassword"
             label="Confirm Password"
             className="!w-[96%] !h-[60px]"
             required
           />
+          {error && (
+            <div className="text-red-500 text-sm">
+              {error}
+            </div>
+          )}
           <Button
             type="submit"
             label="Signup"

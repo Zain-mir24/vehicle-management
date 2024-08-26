@@ -65,6 +65,7 @@ constructor(@InjectModel(User.name) private userModel: Model<UserDocument>){
   async  update(id: number, updateUserDto: UpdateUserDto) {
     try{
       const updateVerificationStatus= await this.userModel.findByIdAndUpdate(id,updateUserDto,{new:true});
+
       return updateVerificationStatus
     }catch(e){
       console.log("ERRIR",e)

@@ -5,9 +5,14 @@ import PasswordInput from "components/ui/Inputs/PasswordInput";
 import handImg from "assets/hand.svg";
 import Button from "components/ui/Button";
 import { Link } from "react-router-dom";
+import { SigninApi } from "Store/Slices/AuthSlice";
+import { useDispatch } from "react-redux";
+import { setAuthData } from "Store/Slices/AuthSlice";
+import { setAuthToken } from "config";
 import { useNavigate } from "react-router-dom";
 const Signin = () => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [userdata, setuserdata] = useState({
     email: "",
     password: "",
@@ -15,7 +20,16 @@ const Signin = () => {
   const handleSubmit = async (e: any) => {
     e.preventDefault();
     console.log(userdata, "userdata");
-    sessionStorage.setItem("Token", "Token");
+
+    const loginUser = await SigninApi(userdata);
+
+    console.log(loginUser.data);
+
+    dispatch(setAuthData(loginUser.data.userData));
+
+    sessionStorage.setItem('Token', loginUser.data.userData.accessToken);
+    setAuthToken(loginUser.data.userData.accessToken);
+
     navigate("/dashboard");
   };
   return (
@@ -27,7 +41,7 @@ const Signin = () => {
         Vehecrita
       </h1>
       <p className="mt-3 text-grey-500 max-w-[512px] text-center">
-        Manage and track your fleet efficiently with our comprehensive vehicle
+       Comprehensive vehicle
         management system
       </p>
       <form

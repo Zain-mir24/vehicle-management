@@ -1,22 +1,27 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useRef } from "react";
+import { useRef, useState,useEffect } from "react";
 import CustomTable from "components/ui/Table";
 import { DataTableColumnProps } from "components/ui/Table";
 import { CustomMenu } from "styles/global.style";
+import TextInput from "components/ui/Inputs/TextInput";
+import { Dialog } from "primereact/dialog";
+import Button from "components/ui/Button";
+import { getAllCategory , addCategory } from "Store/Slices/CategorySlice";
 const CategoryTable = () => {
-  const products: any[] = [
-    {
-      id: 1,
-      make: "Toyota",
-      model: "2024",
-      registrationNo: "AWS-1010",
-      color: "Green",
-    },
-  ];
-  const EditEvent = (id: any) => {
+  const [visible, setVisible] = useState(false);
+  const [addingCategory, setAddingCategory] = useState(false);
+  const [categoryData, setCategoryData] = useState({
+    name:""
+  })
+  const [categoryList,setCategoryList] = useState([]);
+  const EditEvent = (id?: any) => {
     console.log(id, "id");
+    if(!id){
+      setAddingCategory(true)
+    }
+    setVisible(true);
   };
   const deleteEvent = (id: any) => {
     console.log(id, "id");
@@ -93,28 +98,30 @@ const CategoryTable = () => {
       </div>
     );
   };
+
+  useEffect(()=>{
+
+    const getCategory = async () => {
+      const category = await getAllCategory();
+      
+      console.log(category.data);
+
+      setCategoryList(category.data)
+    }
+    getCategory();
+
+  },[])
+
   const columns: DataTableColumnProps[] = [
     {
-      field: "make",
-      header: "Make",
+      field: "_id",
+      header: "id",
       sortable: true,
       columnclasses: "text-left",
     },
     {
-      field: "model",
-      header: "Model",
-      sortable: true,
-      columnclasses: "text-left",
-    },
-    {
-      field: "registrationNo",
-      header: "Registeration No",
-      sortable: true,
-      columnclasses: "text-left",
-    },
-    {
-      field: "color",
-      header: "Color",
+      field: "name",
+      header: "name",
       sortable: true,
       columnclasses: "text-left",
     },
@@ -127,11 +134,78 @@ const CategoryTable = () => {
     },
     // More columns...
   ];
+  const handleAddCategory = async (e: any) => {
+    e.preventDefault();
+    
+    if(addingCategory){
+      const createCategory = await addCategory(categoryData);
+
+      console.log(createCategory)
+
+      if(createCategory.status === 200){
+        const category = await getAllCategory();
+      
+  
+        setCategoryList(category.data)
+      }
+     
+    }
+    setVisible(false);
+  };
   return (
     <div className="border rounded-lg m-4 border-[#EBF0ED]">
+     
+      <Dialog
+        showHeader={false}
+        visible={visible}
+        style={{ width: "30vw" }}
+        onHide={() => {
+          if (!visible) return;
+          setVisible(false);
+        }}
+      >
+        <div className="relative">
+          <div className="flex justify-end w-full mt-3">
+            <span
+              onClick={() => setVisible(false)}
+              className="text-right flex cursor-pointer justify-center items-center text-base text-black w-[50px] h-[50px] bg-grey-300 rounded-[50px]"
+            >
+              X
+            </span>
+          </div>
+          <form
+            onSubmit={handleAddCategory}
+            className="relative flex flex-col gap-8 mt-10"
+          >
+            <TextInput
+              value={categoryData.name}
+              onChange={(e: any) => setCategoryData({ name:e.target.value  })}
+              id="name"
+              label="category name"
+              className="!w-full !h-[50px]"
+              required
+            />
+
+
+
+            <Button
+              type="submit"
+              label="Create"
+              className="w-full h-[50px] !bg-secondary-green"
+            />
+          </form>
+        </div>
+      </Dialog>
+      <div className="w-full flex justify-end">
+        <Button label="Create"
+          className="  w-100 h-[50px] !bg-secondary-green" 
+          onClick={()=> EditEvent() }
+        />
+      </div>
+
       <CustomTable
         classes="my-custom-class"
-        products={products}
+        products={categoryList}
         columns={columns}
         rows={10}
       />

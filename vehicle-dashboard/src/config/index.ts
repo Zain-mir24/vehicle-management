@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-empty */
 import axios from "axios";
-export const BaseURL = import.meta.env.BASE_URL;
+export const BaseURL = import.meta.env.VITE_REACT_BASE_URL;
 
 const instance = axios.create({
   baseURL: BaseURL,
@@ -10,12 +10,13 @@ const instance = axios.create({
 export const setAuthToken = (tokeen?: string) => {
   try {
     const token = sessionStorage.getItem("Token") as string;
-    if (tokeen) {
-      instance.defaults.headers.common.Authorization = `Bearer ${tokeen}`;
-    }
     if (token) {
-      instance.defaults.headers.common.Authorization = `Bearer ${token}`;
+      instance.defaults.headers.common.Authorization = `${token}`;
     }
+    if (tokeen) {
+      instance.defaults.headers.common.Authorization = `${tokeen}`;
+    }
+  
   } catch (e) {}
 };
 setAuthToken();
