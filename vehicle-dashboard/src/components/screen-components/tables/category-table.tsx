@@ -8,23 +8,41 @@ import { CustomMenu } from "styles/global.style";
 import TextInput from "components/ui/Inputs/TextInput";
 import { Dialog } from "primereact/dialog";
 import Button from "components/ui/Button";
-import { getAllCategory , addCategory } from "Store/Slices/CategorySlice";
+import { useDispatch } from "react-redux";
+import { getAllCategory , addCategory, editCategory, setCategories, deleteCategory } from "Store/Slices/CategorySlice";
 const CategoryTable = () => {
+  const dispatch = useDispatch();
+
   const [visible, setVisible] = useState(false);
   const [addingCategory, setAddingCategory] = useState(false);
   const [categoryData, setCategoryData] = useState({
-    name:""
+    name:"",
+    id:""
   })
   const [categoryList,setCategoryList] = useState([]);
-  const EditEvent = (id?: any) => {
-    console.log(id, "id");
-    if(!id){
-      setAddingCategory(true)
+
+  const EditEvent = (data?: any) => {
+    console.log(data, "data");
+    if(!data){
+      setAddingCategory(true);
+    }else{
+      setAddingCategory(false);
+      setCategoryData({id:data._id,name:data.name  });
     }
     setVisible(true);
   };
-  const deleteEvent = (id: any) => {
+
+  const deleteEvent = async (id: any) => {
     console.log(id, "id");
+    try {
+      const removeCategory = await deleteCategory(id);
+
+      console.log(removeCategory)
+
+      getCategory();
+    } catch (e) {
+      console.log(e)
+    }
   };
   const MenuBodyTemplate = (rowData: any) => {
     const menuLeftRef = useRef<any>(null);
@@ -38,7 +56,7 @@ const CategoryTable = () => {
               <div
                 className="flex gap-1 items-center justify-center  text-[13px] font-[400] text-[#21212]"
                 onClick={() => {
-                  EditEvent(rowData.id);
+                  EditEvent(rowData);
                 }}
               >
                 Edit
@@ -54,7 +72,7 @@ const CategoryTable = () => {
               <div
                 className="flex gap-1 items-center justify-center  text-[13px] font-[400] text-[#21212]"
                 onClick={() => {
-                  deleteEvent(rowData.id);
+                  deleteEvent(rowData._id);
                 }}
               >
                 Delete
@@ -99,17 +117,16 @@ const CategoryTable = () => {
     );
   };
 
+  const getCategory = async () => {
+    const category = await getAllCategory();
+    
+    setCategoryList(category.data);
+
+    dispatch(setCategories(category.data));
+  }
+
   useEffect(()=>{
-
-    const getCategory = async () => {
-      const category = await getAllCategory();
-      
-      console.log(category.data);
-
-      setCategoryList(category.data)
-    }
     getCategory();
-
   },[])
 
   const columns: DataTableColumnProps[] = [
@@ -136,20 +153,20 @@ const CategoryTable = () => {
   ];
   const handleAddCategory = async (e: any) => {
     e.preventDefault();
-    
-    if(addingCategory){
-      const createCategory = await addCategory(categoryData);
 
-      console.log(createCategory)
+    if (addingCategory) {
+      await addCategory(categoryData);
 
-      if(createCategory.status === 200){
-        const category = await getAllCategory();
-      
-  
-        setCategoryList(category.data)
-      }
-     
+
+    } else {
+      const updateCategory = await editCategory(categoryData);
+
+      console.log(updateCategory);
     }
+    const category = await getAllCategory();
+    dispatch(setCategories(category.data));
+
+    setCategoryList(category.data)
     setVisible(false);
   };
   return (
@@ -179,7 +196,7 @@ const CategoryTable = () => {
           >
             <TextInput
               value={categoryData.name}
-              onChange={(e: any) => setCategoryData({ name:e.target.value  })}
+              onChange={(e: any) => setCategoryData({...categoryData, name:e.target.value  })}
               id="name"
               label="category name"
               className="!w-full !h-[50px]"
@@ -190,7 +207,7 @@ const CategoryTable = () => {
 
             <Button
               type="submit"
-              label="Create"
+              label={addingCategory ? "Create" : "Update"}
               className="w-full h-[50px] !bg-secondary-green"
             />
           </form>

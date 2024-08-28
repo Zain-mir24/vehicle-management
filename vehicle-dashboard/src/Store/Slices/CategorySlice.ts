@@ -20,9 +20,31 @@ export const getAllCategory = async () => {
   }
 };
 
-export const addCategory = async (data:{name: string}) => {
+export const addCategory = async (data:{name: string,id?:string}) => {
   try {
-    const response = await url.post("/categories",data);
+    const response = await url.post("/categories",{name:data.name});
+    console.log("response", response);
+    return response
+  } catch (err: Error) {
+    console.log(err);
+    return err.response
+  }
+}
+
+export const editCategory = async (data:{id:string,name: string}) => {
+  try {
+    const response = await url.patch(`/categories/${data.id}`,{name:data.name});
+    console.log("response", response);
+    return response
+  } catch (err: Error) {
+    console.log(err);
+    return err.response
+  }
+}
+
+export const deleteCategory = async (data:string) => {
+  try {
+    const response = await url.delete(`/categories/${data}`);
     console.log("response", response);
     return response
   } catch (err: Error) {
@@ -35,7 +57,10 @@ const catgorySlice = createSlice({
   name: "category",
   initialState,
   reducers: {
+    setCategories: (state, action: PayloadAction<category>) => {
+      state.categoryData = action.payload;
+    }
   },
 });
-
+export const { setCategories } = catgorySlice.actions;
 export default catgorySlice.reducer;
