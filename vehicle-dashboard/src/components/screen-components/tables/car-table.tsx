@@ -211,7 +211,7 @@ const CarTable = () => {
     if(addCar){
         await addCarsApi(cardata) ;
     }else{
-        await editCarApi({id:editCarId,data:{...cardata,categoryId:cardata.categoryId?._id}})
+        await editCarApi({id:editCarId,data:{...cardata}})
     }
     setcardata({ make: "", model: "", registrationNo: "", year: "0", color: "" });
     await fetchCars()
