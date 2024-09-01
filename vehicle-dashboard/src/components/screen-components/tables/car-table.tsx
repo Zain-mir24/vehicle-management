@@ -213,6 +213,7 @@ const CarTable = () => {
     }else{
         await editCarApi({id:editCarId,data:{...cardata,categoryId:cardata.categoryId?._id}})
     }
+    setcardata({ make: "", model: "", registrationNo: "", year: "0", color: "" });
     await fetchCars()
     setVisible(false);
   };

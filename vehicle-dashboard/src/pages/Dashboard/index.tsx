@@ -3,20 +3,27 @@
 import CarTable from "components/screen-components/tables/car-table";
 import { useEffect ,useState} from "react";
 import { totalCarsApi } from "Store/Slices/CarsSlice";
-import { totalCategoriesApi } from "Store/Slices/CategorySlice";
+import { totalCategoriesApi ,getAllCategory,setCategories} from "Store/Slices/CategorySlice";
+import { useDispatch } from "react-redux";
+
 const Dashboard = () => {
   const [total,setTotal]=useState({
     cars:0,
     categories:0
   })
+  const dispatch = useDispatch();
 
   const fetchCars = async () => {
     const getCars: any = await totalCarsApi();
     const getCategories: any = await totalCategoriesApi();
+    const getAllCats:any = await getAllCategory();
+    dispatch(setCategories(getAllCats.data));
+
     setTotal({ cars:getCars.data.data, categories: getCategories.data.data })
   }
   useEffect(()=>{
 fetchCars()
+
   },[])
   return (
     <div>
