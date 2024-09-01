@@ -87,10 +87,6 @@ export class CarsService {
 
 async update(id: ObjectId,updateCarDto: UpdateCarDto, ) {
   try {
-
-    if(updateCarDto.categoryId){
-      throw new Error('Cannot update category');
-    }
  
     const updatedCar = await this.carModel.findByIdAndUpdate(id, updateCarDto, { new: true });
     if (!updatedCar) throw new Error('Car not found');
@@ -124,6 +120,29 @@ async remove(id: string) {
       status:HttpStatus.OK
     };
   } catch (e) {
+    throw new HttpException(
+      {
+        status: HttpStatus.BAD_REQUEST,
+        error: e.message || e,
+      },
+      HttpStatus.BAD_REQUEST,
+      {
+        cause: e.message || e,
+      },
+    );
+  }
+}
+
+async totalCars(){
+  try {
+    const cars = await this.carModel.find();
+    return {
+      status:HttpStatus.CREATED,
+      data:cars.length,
+      message:"total cars fetched successfully"
+    };
+  } catch (e) {
+    console.log(e)
     throw new HttpException(
       {
         status: HttpStatus.BAD_REQUEST,

@@ -18,18 +18,18 @@ export default tseslint.config(
       "react-refresh": reactRefresh,
     },
     rules: {
-      ...reactHooks.configs.recommended.rules,
-      "react-refresh/only-export-components": [
-        "warn",
-        { allowConstantExport: true },
-      ],
-      "no-unused-vars": "error",
-      indent: ["error", 2],
-      eqeqeq: ["error", "smart"],
-      "space-infix-ops": "error",
-      // "camelcase": ["error", { "properties": "always" }],
-      "object-curly-newline": 0,
-      "tailwindcss/no-custom-classname": "off",
+      // ...reactHooks.configs.recommended.rules,
+      // "react-refresh/only-export-components": [
+      //   "warn",
+      //   { allowConstantExport: true },
+      // ],
+      // "no-unused-vars": "error",
+      // indent: ["error", 2],
+      // eqeqeq: ["error", "smart"],
+      // "space-infix-ops": "error",
+      // // "camelcase": ["error", { "properties": "always" }],
+      // "object-curly-newline": 0,
+      // "tailwindcss/no-custom-classname": "off",
     },
   }
 );

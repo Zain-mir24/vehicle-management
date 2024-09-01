@@ -1,8 +1,9 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Delete, HttpCode, HttpStatus } from '@nestjs/common';
 import { CarsService } from './cars.service';
 import { CreateCarDto } from './dto/create-car.dto';
 import { UpdateCarDto } from './dto/update-car.dto';
 import { ObjectId } from 'mongoose';
+import { ApiResponse } from '@nestjs/swagger';
 
 @Controller('cars')
 export class CarsController {
@@ -16,9 +17,24 @@ export class CarsController {
    */
 
   @Post()
+  @HttpCode(200)
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Car has been created' })
   create(@Body() createCarDto: CreateCarDto) {
     return this.carsService.create(createCarDto);
   }
+
+   /**
+   * Returns the total number of cars in the database.
+   *
+   * @return {Promise<number>} The total number of cars.
+   */
+   @Get('/total/number')
+   @HttpCode(200)
+   @ApiResponse({ status: HttpStatus.CREATED, description: 'Total cars fetched' })
+ 
+   totalCars() {
+     return this.carsService.totalCars();
+   }
 
 
   /**
@@ -63,4 +79,6 @@ export class CarsController {
   remove(@Param('id') id: string) {
     return this.carsService.remove(id);
   }
+
+   
 }

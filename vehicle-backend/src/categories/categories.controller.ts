@@ -28,6 +28,9 @@ export class CategoriesController {
   }
 
 
+
+
+
   /**
  * Retrieves a list of all categories.
  *
@@ -47,6 +50,23 @@ export class CategoriesController {
 
     }
   }
+
+
+
+   /**
+   * Returns the total number of cars in the database.
+   *
+   * @return {Promise<number>} The total number of cars.
+   */
+   @Get('/total/number')
+   @HttpCode(200)
+   @ApiResponse({ status: HttpStatus.CREATED, description: 'Total cars fetched' })
+ 
+   totalCategories() {
+     return this.CategoryService.totalCategories();
+   }
+
+
 
 
   /**

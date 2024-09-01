@@ -1,7 +1,7 @@
 /* eslint-disable no-unused-vars */
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import CustomTable from "components/ui/Table";
 import { DataTableColumnProps } from "components/ui/Table";
 import { CustomMenu } from "styles/global.style";
@@ -9,55 +9,63 @@ import { Dialog } from "primereact/dialog";
 import TextInput from "components/ui/Inputs/TextInput";
 import Button from "components/ui/Button";
 import Dropdown from "components/ui/Dropdown";
-import { categories } from "utils/constants";
 import Pagination from "../pagination";
 import { usePaginationHook } from "hooks/usePagination.hook";
+import { addCarsApi,getAllCars ,deleteCarApi, editCarApi} from "Store/Slices/CarsSlice";
+import { RootState } from "Store/store";
+import { useSelector } from "react-redux";
 const CarTable = () => {
   const [visible, setVisible] = useState(false);
-  const products: any[] = [
-    {
-      id: 1,
-      make: "Toyota",
-      model: "2024",
-      registrationNo: "AWS-1010",
-      color: "Green",
-    },
-  ];
+  const [addCar, setAddCar] = useState(false);
+  const [editCarId,setEditCarId] = useState("");
   const [cardata, setcardata] = useState({
+    year:"0",
     make: "",
     model: "",
     registrationNo: "",
     color: "",
-    id: "",
-    category: { id: 0, name: "" },
+    categoryId: ""
   });
-  const EditEvent = (id: any) => {
-    console.log(id, "id");
+
+
+  const [carList,setCarList] = useState([]);
+
+  const EditEvent = (data?: any) => {
+    console.log(data)
+
+    if (!data) {
+      setAddCar(true);
+      setcardata({
+        year:"0",
+        make: "",
+        model: "",
+        registrationNo: "",
+        color: "",
+        categoryId: ""
+      });
+    }
+    else {
+      const {_id,__v,...body} = data;
+      console.log(body)
+      setAddCar(false);
+      setEditCarId(data._id);
+      
+      setcardata(body);
+    }
     setVisible(true);
   };
-  const deleteEvent = (id: any) => {
+  const deleteEvent = async (id: any) => {
     console.log(id, "id");
+
+    await deleteCarApi(id);
+
+    await fetchCars()
+
   };
   const MenuBodyTemplate = (rowData: any) => {
     const menuLeftRef = useRef<any>(null);
     const MenuTemplate = ({ menuRef, id }: any) => {
       const items = [
-        {
-          label: "Add Car",
-
-          template: () => {
-            return (
-              <div
-                className="flex gap-1 items-center justify-center  text-[13px] font-[400] text-[#21212]"
-                onClick={() => {
-                  setVisible(true);
-                }}
-              >
-                Add
-              </div>
-            );
-          },
-        },
         {
           label: "Edit Car",
 
@@ -66,7 +74,8 @@ const CarTable = () => {
               <div
                 className="flex gap-1 items-center justify-center  text-[13px] font-[400] text-[#21212]"
                 onClick={() => {
-                  EditEvent(rowData.id);
+                  console.log(rowData)
+                  EditEvent(rowData);
                 }}
               >
                 Edit
@@ -82,7 +91,7 @@ const CarTable = () => {
               <div
                 className="flex gap-1 items-center justify-center  text-[13px] font-[400] text-[#21212]"
                 onClick={() => {
-                  deleteEvent(rowData.id);
+                  deleteEvent(rowData._id);
                 }}
               >
                 Delete
@@ -146,6 +155,12 @@ const CarTable = () => {
       columnclasses: "text-left",
     },
     {
+      field: "year",
+      header: "year",
+      sortable: true,
+      columnclasses: "text-left",
+    },
+    {
       field: "color",
       header: "Color",
       sortable: true,
@@ -169,10 +184,40 @@ const CarTable = () => {
     handlePreviousButton,
     handlePageClick,
   } = usePaginationHook();
-  const handleAddCar = (e: any) => {
+
+  const categoryDataList = useSelector(
+    (state: RootState) => state.CategorySlice.categoryData
+  );
+
+
+
+  console.log(categoryDataList);
+  const fetchCars = async () => {
+    try {
+      const getCars:any = await getAllCars();
+      console.log(getCars);
+      setCarList(getCars.data.data);
+    } catch (e) {
+      console.log('error', e)
+    }
+  
+  }
+  useEffect(() => {
+    fetchCars()
+  }, [])
+  const handleAddCar = async (e: any) => {
     e.preventDefault();
     console.log(cardata, "cardata");
+    if(addCar){
+        await addCarsApi(cardata) ;
+    }else{
+        await editCarApi({id:editCarId,data:{...cardata,categoryId:cardata.categoryId?._id}})
+    }
+    await fetchCars()
+    setVisible(false);
   };
+
+
   return (
     <div className="border rounded-lg m-4 border-[#EBF0ED]">
       <Dialog
@@ -235,12 +280,23 @@ const CarTable = () => {
               className="!w-full !h-[50px]"
               required
             />
+            <TextInput
+              value={cardata.year}
+              onChange={(e) =>
+                setcardata({ ...cardata, year: e.target.value })
+              }
+              id="year"
+              label="year"
+              className="!w-full !h-[50px]"
+              required
+            />
             <Dropdown
-              value={cardata.category}
+              value={cardata.categoryId}
               onChange={(e) => {
-                setcardata({ ...cardata, category: e.value });
+                console.log(e.value)
+                setcardata({ ...cardata, categoryId: e.value});
               }}
-              options={categories}
+              options={Object.values(categoryDataList)}
               optionLabel="name"
               placeholder="Select Category"
               className="w-full "
@@ -254,9 +310,17 @@ const CarTable = () => {
           </form>
         </div>
       </Dialog>
+
+      <div className="w-full flex justify-end">
+        <Button label="Create"
+          className="  w-100 h-[50px] !bg-secondary-green" 
+          onClick={()=> EditEvent() }
+        />
+      </div>
+
       <CustomTable
         classes="my-custom-class"
-        products={products}
+        products={carList}
         columns={columns}
         rows={10}
       />

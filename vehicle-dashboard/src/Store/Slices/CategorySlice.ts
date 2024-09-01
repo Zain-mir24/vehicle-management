@@ -52,7 +52,18 @@ export const deleteCategory = async (data:string) => {
     return err.response
   }
 }
-  
+
+export const totalCategoriesApi = async () => {
+  try {
+    const response = await url.get(`/categories/total/number`);
+    console.log("response", response);
+    return response
+  } catch (err: unknown) {
+    const error = err as Error
+    return error
+  }
+}
+
 const catgorySlice = createSlice({
   name: "category",
   initialState,

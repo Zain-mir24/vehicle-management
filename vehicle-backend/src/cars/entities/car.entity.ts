@@ -14,7 +14,7 @@ export class Car {
   @Prop({ required: true })
   make: string;
 
-  @Prop({ required: true, unique: true })
+  @Prop({ required: true, })
   registrationNo: string;
 
   @Prop()

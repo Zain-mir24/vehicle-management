@@ -111,8 +111,39 @@ export class CategoryService {
       }
 
     }catch(e){
-
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: e.message || e,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: e.message || e,
+        },
+      );
     }
    
+  }
+
+  async totalCategories() {
+    try {
+      const cars = await this.categoryModel.find();
+      return {
+        status:HttpStatus.CREATED,
+        data:cars.length,
+        message:"total categories fetched successfully"
+      };
+    } catch (e) {
+      throw new HttpException(
+        {
+          status: HttpStatus.BAD_REQUEST,
+          error: e.message || e,
+        },
+        HttpStatus.BAD_REQUEST,
+        {
+          cause: e.message || e,
+        },
+      );
+    }
   }
 }
